@@ -9,6 +9,7 @@ click==8.1.7
 colorama==0.4.6
 et_xmlfile==2.0.0
 Flask==3.0.3
+gunicorn
 folium==0.18.0
 idna==3.6
 importlib-metadata==7.0.1
