@@ -1828,3 +1828,4 @@ def abrir_mapa_no_navegador():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    # app.run(debug=True)

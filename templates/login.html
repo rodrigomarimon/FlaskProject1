@@ -3,50 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Login - GPS Tracking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Efeito Matrix no fundo */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 98px,
+                    rgba(0, 255, 0, 0.03) 100px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 98px,
+                    rgba(0, 255, 0, 0.03) 100px
+                );
+            z-index: -1;
+        }
+
+        /* Animação de caracteres Matrix */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #00ff00;
+            overflow: hidden;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            animation: matrix-fall linear infinite;
+        }
+
+        @keyframes matrix-fall {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        .login-container {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow:
+                0 0 30px rgba(0, 255, 0, 0.3),
+                inset 0 0 30px rgba(0, 255, 0, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .login-container::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ff00, #008800, #00ff00);
+            border-radius: 15px;
+            z-index: -1;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #00ff00;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .logo p {
+            color: #ccc;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00ff00;
+            font-size: 1.5em;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .input-group input::placeholder {
+            color: #888;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff00;
+            font-size: 18px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(45deg, #00cc00, #009900);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .forgot-password {
+            text-align: center;
+        }
+
+        .forgot-password a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #00cc00;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #dc3545;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Efeito de digitação */
+        .typing-effect {
+            overflow: hidden;
+            border-right: 2px solid #00ff00;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #00ff00; }
+        }
+
+        /* Responsivo */
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+
+            .logo h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Efeito Matrix de fundo -->
+    <div class="matrix-bg" id="matrix"></div>
+
     <div class="login-container">
-        <h2>Preencha seus dados</h2>
+        <div class="logo">
+            <h1>🗺️ GPS</h1>
+            <p class="typing-effect">Sistema de Rastreamento</p>
+        </div>
+
+        <h2>Acesso ao Sistema</h2>
+
+        {% if mensagem_erro %}
+        <div class="error-message">
+            ❌ {{ mensagem_erro }}
+        </div>
+        {% endif %}
+
         <form action="/login" method="POST">
             <div class="input-group">
                 <input type="text" name="username" placeholder="Usuário" required>
-                <i class="fa fa-user"></i> <!-- Ícone de usuário -->
+                <span class="input-icon">👤</span>
             </div>
+
             <div class="input-group">
                 <input type="password" name="password" placeholder="Senha" required>
-                <i class="fa fa-lock"></i> <!-- Ícone de cadeado -->
+                <span class="input-icon">🔒</span>
             </div>
-            <button type="submit">Entrar</button>
+
+            <button type="submit" class="submit-btn">Entrar no Sistema</button>
         </form>
-        <a href="#">Esqueceu a senha?</a>
+
+        <div class="forgot-password">
+            <a href="#">Esqueceu a senha?</a>
+        </div>
     </div>
+
+    <script>
+        // Criar efeito Matrix de fundo
+        function createMatrixEffect() {
+            const matrix = document.getElementById('matrix');
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+
+            for (let i = 0; i < 50; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                column.style.animationDelay = Math.random() * 2 + 's';
+
+                let text = '';
+                for (let j = 0; j < 20; j++) {
+                    text += chars[Math.floor(Math.random() * chars.length)] + '<br>';
+                }
+                column.innerHTML = text;
+
+                matrix.appendChild(column);
+            }
+        }
+
+        // Efeito de digitação
+        function typeWriter() {
+            const element = document.querySelector('.typing-effect');
+            const text = 'Sistema de Rastreamento';
+            element.style.width = '0';
+            element.style.borderRight = '2px solid #00ff00';
+
+            setTimeout(() => {
+                element.style.animation = 'typing 3s steps(40, end), blink-caret 0.75s step-end infinite';
+            }, 500);
+        }
+
+        // Inicializar efeitos
+        document.addEventListener('DOMContentLoaded', function() {
+            createMatrixEffect();
+            typeWriter();
+        });
+
+        // Efeito no formulário
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const btn = document.querySelector('.submit-btn');
+            btn.innerHTML = 'Conectando...';
+            btn.style.background = 'linear-gradient(45deg, #666, #444)';
+        });
+    </script>
 </body>
 </html>
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <h1>Login</h1>
-    {% if mensagem_erro %}
-        <p style="color: red;">{{ mensagem_erro }}</p>
-    {% endif %}
-    <form action="{{ url_for('login') }}" method="post">
-        <label for="username">Usuário:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Senha:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <input type="submit" value="Login">
-    </form>
-</body>
-</html> -->
